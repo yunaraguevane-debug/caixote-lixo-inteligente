@@ -2,316 +2,156 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#174b35">
-    <meta name="description" content="CLI - Caixote do Lixo Inteligente. Monitorização do nível de enchimento e da qualidade do ar através de sensores e ESP32.">
-    <title>CLI | Caixote do Lixo Inteligente</title>
-    <link rel="icon" type="image/svg+xml"
-          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23176b45'/%3E%3Cpath d='M49 10C24 10 12 21 12 39c0 9 7 15 16 15 17 0 24-22 21-44Z' fill='%239bd6a5'/%3E%3Cpath d='M9 56C19 40 30 29 45 18' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102d25">
+  <title>CLI | Smart Waste Monitoring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
-<header class="topo">
-    <a class="marca" href="#inicio" aria-label="CLI - Início">
-        <div class="icone-folha" aria-hidden="true">
-            <svg viewBox="0 0 64 64">
-                <path d="M53 8C28 8 12 18 12 37c0 10 7 17 17 17C48 54 56 31 53 8Z" fill="#83bd8a"/>
-                <path d="M8 57C18 40 30 29 47 17" fill="none" stroke="#176b45" stroke-width="3" stroke-linecap="round"/>
-                <path d="M27 38l-1-12M36 30l12 1" fill="none" stroke="#176b45" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-        </div>
-        <div>
-            <h1>CLI</h1>
-            <p>Caixote do Lixo Inteligente</p>
-        </div>
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">🌿</span>
+      <span>cli<span class="brand-dot">.</span></span>
     </a>
 
-    <div class="ligacao" id="estadoLigacao">
-        <span class="ponto-ligacao"></span>
-        <span id="textoLigacao">A iniciar...</span>
+    <div class="topbar-right">
+      <span class="live-indicator"><span></span> DEMONSTRAÇÃO</span>
+      <div class="profile-icon">CLI</div>
     </div>
-</header>
+  </header>
 
-<main class="conteudo" id="inicio">
+  <main class="container">
+    <section class="welcome">
+      <div>
+        <p class="eyebrow">SMART WASTE MANAGEMENT</p>
+        <h1>O futuro é <span>mais inteligente.</span></h1>
+        <p class="subtitle">Monitorização inteligente, simples e sustentável.</p>
+      </div>
+      <div class="welcome-emoji">♻️</div>
+    </section>
 
-    <section class="apresentacao">
+    <section class="status-banner" id="statusBanner">
+      <div class="status-symbol" id="statusIcon">🌱</div>
+      <div>
+        <p class="status-label">ESTADO DO SISTEMA</p>
+        <h2 id="estadoGeral">Tudo sob controlo</h2>
+        <p id="descricaoEstado">Os sensores estão a funcionar em modo demonstração.</p>
+      </div>
+      <span class="status-pill" id="statusPill">NORMAL</span>
+    </section>
+
+    <section class="metrics">
+      <article class="metric-card fill-card">
+        <div class="card-top">
+          <span class="metric-icon">🗑️</span>
+          <span class="card-tag">HC-SR04</span>
+        </div>
+        <p class="metric-title">Nível de enchimento</p>
+        <div class="metric-value"><span id="nivel">24</span><small>%</small></div>
+        <div class="progress-track">
+          <div class="progress-fill" id="barraNivel"></div>
+        </div>
+        <div class="metric-bottom">
+          <span id="estadoEnchimento">Nível baixo</span>
+          <span>Capacidade</span>
+        </div>
+      </article>
+
+      <article class="metric-card air-card">
+        <div class="card-top">
+          <span class="metric-icon">💨</span>
+          <span class="card-tag">MQ-2</span>
+        </div>
+        <p class="metric-title">Qualidade do ar</p>
+        <div class="metric-value"><span id="valorAr">650</span><small> ADC</small></div>
+        <div class="air-status" id="estadoAr">
+          <span class="air-dot"></span>
+          Boa qualidade
+        </div>
+        <p class="metric-note">Leitura do sensor de gases</p>
+      </article>
+
+      <article class="metric-card update-card">
+        <div class="card-top">
+          <span class="metric-icon">📡</span>
+          <span class="card-tag">SISTEMA</span>
+        </div>
+        <p class="metric-title">Última atualização</p>
+        <div class="update-time" id="horaLeitura">--:--:--</div>
+        <div class="connection-status">
+          <span class="connection-dot"></span>
+          Modo demonstração
+        </div>
+        <p class="metric-note">Atualização automática: 3 segundos</p>
+      </article>
+    </section>
+
+    <section class="chart-card">
+      <div class="section-heading">
         <div>
-            <span class="etiqueta">MONITORIZAÇÃO INTELIGENTE</span>
-            <h2>Monitorização do <span>enchimento</span> e da <span>qualidade do ar</span></h2>
-            <p>
-                O CLI utiliza sensores e um ESP32 para acompanhar o estado
-                do caixote e facilitar uma recolha de resíduos mais eficiente.
-            </p>
-            <div class="autores-resumo">
-                <span>Projeto desenvolvido por</span>
-                <strong>Tifany Parbhudas · Yunara Guevane</strong>
-            </div>
+          <p class="eyebrow">MONITORIZAÇÃO</p>
+          <h2>Histórico de enchimento</h2>
+          <p class="section-description">Acompanha a evolução do nível da lixeira em tempo real.</p>
         </div>
-        <div class="ilustracao" aria-hidden="true">
-            <div class="circulo-ilustracao">
-                <span class="folha-grande">❧</span>
-                <span class="simbolo-reciclagem">♻</span>
-            </div>
-        </div>
+        <span class="chart-period">● AO VIVO</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="grafico" aria-label="Gráfico do nível de enchimento ao longo do tempo"></canvas>
+      </div>
+      <div class="chart-legend">
+        <span><i></i> Nível de enchimento (%)</span>
+        <span class="chart-update">Atualizado de 3 em 3 segundos</span>
+      </div>
     </section>
 
-    <section class="painel">
-        <div class="cabecalho-seccao">
-            <div>
-                <span class="etiqueta">PAINEL DE CONTROLO</span>
-                <h2>Estado do caixote</h2>
-            </div>
-            <div class="demo-aviso" id="avisoDemo">
-                <span></span> Modo demonstração · Sem ligação ao ESP32
-            </div>
+    <section class="bottom-grid">
+      <article class="info-card">
+        <div class="small-icon">🚦</div>
+        <h3>Estados de enchimento</h3>
+        <div class="state-row">
+          <span class="state-color normal"></span>
+          <span>Normal</span>
+          <strong>0–69%</strong>
         </div>
-
-        <div class="cartoes">
-
-            <article class="cartao">
-                <div class="cartao-topo">
-                    <div class="icone-cartao verde" aria-hidden="true">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M4 7h16M9 7V4h6v3m-9 0 1 14h10l1-14M10 11v6m4-6v6"
-                                  fill="none" stroke="currentColor" stroke-width="1.8"
-                                  stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <span class="categoria">HC-SR04</span>
-                </div>
-
-                <h3>Nível de enchimento</h3>
-                <div class="valor">
-                    <span id="nivel">0</span><small>%</small>
-                </div>
-                <div class="barra-progresso">
-                    <div id="barraNivel"></div>
-                </div>
-                <div class="escala">
-                    <span>Vazio</span><span>Cheio</span>
-                </div>
-                <p class="estado-cartao" id="estadoEnchimento">A calcular...</p>
-            </article>
-
-            <article class="cartao">
-                <div class="cartao-topo">
-                    <div class="icone-cartao azul" aria-hidden="true">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h6"
-                                  fill="none" stroke="currentColor" stroke-width="1.8"
-                                  stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <span class="categoria">MQ-2</span>
-                </div>
-
-                <h3>Leitura do sensor de gás</h3>
-                <div class="valor">
-                    <span id="gas">0</span><small>ADC</small>
-                </div>
-                <div class="estado-ar" id="estadoAr">A analisar...</div>
-                <p class="texto-auxiliar">Valor ADC: 0 a 4095</p>
-                <p class="estado-cartao" id="descricaoAr">
-                    Leitura demonstrativa
-                </p>
-            </article>
-
-            <article class="cartao">
-                <div class="cartao-topo">
-                    <div class="icone-cartao amarelo" aria-hidden="true">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 3 2.8 20h18.4L12 3Z" fill="none"
-                                  stroke="currentColor" stroke-width="1.8"
-                                  stroke-linejoin="round"/>
-                            <path d="M12 9v5m0 3h.01" stroke="currentColor"
-                                  stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <span class="categoria">SISTEMA</span>
-                </div>
-
-                <h3>Estado geral</h3>
-                <div class="estado-geral estado-normal" id="estadoGeral">
-                    NORMAL
-                </div>
-                <p class="estado-cartao" id="descricaoEstado">
-                    O caixote encontra-se em estado normal.
-                </p>
-                <p class="ultima-leitura">
-                    Última leitura: <strong id="horaLeitura">--:--:--</strong>
-                </p>
-            </article>
-
+        <div class="state-row">
+          <span class="state-color warning"></span>
+          <span>Atenção</span>
+          <strong>70–89%</strong>
         </div>
+        <div class="state-row">
+          <span class="state-color alert"></span>
+          <span>Alerta</span>
+          <strong>90–100%</strong>
+        </div>
+      </article>
+
+      <article class="info-card how-card">
+        <div class="small-icon">⚙️</div>
+        <h3>Tecnologia em ação</h3>
+        <div class="technology-flow">
+          <div><span>📡</span><small>Sensores</small></div>
+          <b>→</b>
+          <div><span>🧠</span><small>ESP32</small></div>
+          <b>→</b>
+          <div><span>📱</span><small>Dashboard</small></div>
+        </div>
+        <p>Os sensores recolhem informação e o sistema apresenta os dados de forma clara.</p>
+      </article>
     </section>
 
-    <section class="grafico-cartao">
-        <div class="grafico-cabecalho">
-            <div>
-                <span class="etiqueta">HISTÓRICO DE LEITURAS</span>
-                <h2>Evolução do enchimento</h2>
-                <p>Variação do nível de enchimento ao longo do tempo.</p>
-            </div>
-            <span class="legenda"><i></i> Enchimento (%)</span>
-        </div>
-        <div class="grafico-area">
-            <canvas id="grafico" role="img"
-                    aria-label="Gráfico do histórico do nível de enchimento em percentagem ao longo do tempo.">
-                Gráfico do nível de enchimento.
-            </canvas>
-        </div>
-    </section>
+    <footer>
+      <div class="footer-brand">🌿 cli.</div>
+      <p>Smart Waste Monitoring · Engenharia e Tecnologia</p>
+      <span>© 2026</span>
+    </footer>
+  </main>
 
-    <section class="seccao">
-        <div class="cabecalho-seccao">
-            <div>
-                <span class="etiqueta">LÓGICA DE FUNCIONAMENTO</span>
-                <h2>Estados do sistema</h2>
-            </div>
-        </div>
-
-        <div class="estados">
-            <article class="estado-card normal">
-                <span class="estado-ponto"></span>
-                <h3>Normal</h3>
-                <p>Enchimento inferior a 70% e leitura de gás abaixo do limite de aviso.</p>
-            </article>
-            <article class="estado-card atencao">
-                <span class="estado-ponto"></span>
-                <h3>Aviso</h3>
-                <p>Enchimento igual ou superior a 70%, ou leitura de gás acima do limite de aviso.</p>
-            </article>
-            <article class="estado-card alerta">
-                <span class="estado-ponto"></span>
-                <h3>Alerta</h3>
-                <p>Enchimento igual ou superior a 90%, ou leitura de gás acima do limite de alerta.</p>
-            </article>
-        </div>
-        <p class="nota-limites">
-            Os limites do sensor MQ-2 apresentados são demonstrativos e deverão
-            ser definidos após a calibração do sensor.
-        </p>
-    </section>
-
-    <section class="seccao">
-        <div class="cabecalho-seccao">
-            <div>
-                <span class="etiqueta">ARQUITETURA DO PROJETO</span>
-                <h2>Como funciona</h2>
-                <p class="subtitulo">Da recolha de dados à visualização no navegador.</p>
-            </div>
-        </div>
-
-        <div class="fluxo">
-            <div class="fluxo-item">
-                <div class="fluxo-icone">⌁</div>
-                <h3>Sensores</h3>
-                <p>HC-SR04 e MQ-2 recolhem os dados.</p>
-            </div>
-            <div class="seta">→</div>
-            <div class="fluxo-item">
-                <div class="fluxo-icone">▣</div>
-                <h3>ESP32</h3>
-                <p>Processa as leituras e determina o estado.</p>
-            </div>
-            <div class="seta">→</div>
-            <div class="fluxo-item">
-                <div class="fluxo-icone">⌁</div>
-                <h3>Wi-Fi</h3>
-                <p>Permite a comunicação sem fios.</p>
-            </div>
-            <div class="seta">→</div>
-            <div class="fluxo-item">
-                <div class="fluxo-icone">▤</div>
-                <h3>Página web</h3>
-                <p>Apresenta os valores e o gráfico.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="seccao">
-        <div class="cabecalho-seccao">
-            <div>
-                <span class="etiqueta">CONSTITUIÇÃO DO PROTÓTIPO</span>
-                <h2>Materiais e componentes</h2>
-            </div>
-        </div>
-
-        <div class="tabela-wrapper">
-            <table>
-                <thead>
-                    <tr><th>Componente</th><th>Quantidade</th><th>Função</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>ESP32</td><td>1</td><td>Unidade de controlo e Wi-Fi</td></tr>
-                    <tr><td>HC-SR04</td><td>1</td><td>Medição do enchimento</td></tr>
-                    <tr><td>MQ-2</td><td>1</td><td>Deteção de gases</td></tr>
-                    <tr><td>LCD 1602 com I2C</td><td>1</td><td>Visualização local</td></tr>
-                    <tr><td>LED RGB</td><td>1</td><td>Indicação visual do estado</td></tr>
-                    <tr><td>Buzzer ativo</td><td>1</td><td>Alerta sonoro</td></tr>
-                    <tr><td>Breadboard e jumpers</td><td>1 conjunto</td><td>Montagem do circuito</td></tr>
-                    <tr><td>Resistências 220 Ω, 1 kΩ e 2 kΩ</td><td>Conjunto</td><td>Proteção e adaptação do circuito</td></tr>
-                    <tr><td>Caixote pequeno</td><td>1</td><td>Estrutura do protótipo</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="seccao">
-        <div class="cabecalho-seccao">
-            <div>
-                <span class="etiqueta">PLANEAMENTO</span>
-                <h2>Plano de trabalho</h2>
-                <p class="subtitulo">Calendário previsto para o desenvolvimento do projeto.</p>
-            </div>
-        </div>
-
-        <div class="tabela-wrapper">
-            <table>
-                <thead>
-                    <tr><th>Atividade</th><th>Período</th><th>Resultado previsto</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>A1 · Ambiente e sensores</td><td>06–12 nov.</td><td>Sensores testados</td></tr>
-                    <tr><td>A2 · Calibração e LCD</td><td>13–19 nov.</td><td>Sensores calibrados e LCD funcional</td></tr>
-                    <tr><td>A3 · Programação web</td><td>20–26 nov.</td><td>Página web e gráfico</td></tr>
-                    <tr><td>A4 · LED, buzzer e montagem</td><td>27 nov.–03 dez.</td><td>Protótipo integrado</td></tr>
-                    <tr><td>A5 · Testes e apresentação</td><td>04–13 dez.</td><td>Validação e demonstração</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <p class="nota-limites">Datas do planeamento do projeto, sujeitas a atualização conforme o progresso.</p>
-    </section>
-
-    <section class="seccao sobre">
-        <div>
-            <span class="etiqueta">SOBRE O PROJETO</span>
-            <h2>CLI — Caixote do Lixo Inteligente</h2>
-            <p>
-                Projeto académico de Engenharia Eletrotécnica e de Computadores,
-                desenvolvido no Departamento de Engenharia Eletrotécnica e de
-                Computadores da Universidade de Coimbra.
-            </p>
-        </div>
-        <div class="autores">
-            <h3>Autoras</h3>
-            <p>Tifany Parbhudas</p>
-            <p>Yunara Guevane</p>
-            <a href="https://github.com/yunaraguevane-debug/caixote-lixo-inteligente"
-               target="_blank" rel="noopener noreferrer">Ver código no GitHub ↗</a>
-        </div>
-    </section>
-
-</main>
-
-<footer>
-    <strong>CLI</strong>
-    <span>Projeto académico · DEEC · Universidade de Coimbra · 2026/2027</span>
-</footer>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
