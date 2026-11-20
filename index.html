@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI - Caixote Inteligente</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>CLI</h1>
+        <p>Caixote do Lixo Inteligente</p>
+        <span id="ligacao">A aguardar ligação ao ESP32...</span>
+    </header>
+
+    <main>
+        <section class="sensores">
+            <div class="cartao">
+                <h2>Nível de enchimento</h2>
+                <p id="nivel">--%</p>
+                <span>Sensor ultrassónico HC-SR04</span>
+            </div>
+
+            <div class="cartao">
+                <h2>Qualidade do ar</h2>
+                <p id="gas">--</p>
+                <span>Sensor de gás MQ-2</span>
+            </div>
+        </section>
+
+        <section class="estado">
+            <h2>Estado do caixote</h2>
+            <p id="estado">A aguardar dados...</p>
+        </section>
+
+        <section class="grafico">
+            <h2>Monitorização em tempo real</h2>
+            <canvas id="grafico" width="700" height="300"></canvas>
+        </section>
+    </main>
+
+    <footer>
+        <p>Projeto CLI - DEEC | Universidade de Coimbra</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
