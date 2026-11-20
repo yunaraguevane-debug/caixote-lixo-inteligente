@@ -38,7 +38,7 @@ let qualidadeAr = 650;
 let historico = [];
 
 const MAX_PONTOS = 40;
-const INTERVALO = 3000;
+const INTERVALO = 1000;
 
 
 // LIMITES DEMONSTRATIVOS DO MQ-2
@@ -462,7 +462,7 @@ function simularSensores() {
     */
 
     const aumento =
-        0.02 + Math.random() * 0.06;
+        0.5 + Math.random() * 0.5;
 
     nivelEnchimento = Math.min(
         100,
