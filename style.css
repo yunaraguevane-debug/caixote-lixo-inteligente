@@ -1,0 +1,134 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f1f5f2;
+    color: #26352b;
+}
+
+header {
+    background-color: #176b45;
+    color: white;
+    text-align: center;
+    padding: 30px 15px;
+}
+
+header h1 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+header p {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+#ligacao {
+    font-size: 13px;
+    background-color: white;
+    color: #176b45;
+    padding: 7px 14px;
+    border-radius: 20px;
+}
+
+main {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.sensores {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.cartao {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.cartao h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.cartao p {
+    font-size: 38px;
+    font-weight: bold;
+    color: #176b45;
+    margin-bottom: 10px;
+}
+
+.cartao span {
+    font-size: 13px;
+    color: #777;
+}
+
+.estado {
+    background-color: white;
+    padding: 25px;
+    margin-top: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.estado h2 {
+    margin-bottom: 15px;
+}
+
+#estado {
+    font-size: 18px;
+    font-weight: bold;
+    color: #176b45;
+}
+
+.grafico {
+    background-color: white;
+    padding: 25px;
+    margin-top: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.grafico h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+}
+
+footer {
+    background-color: #176b45;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .sensores {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .cartao p {
+        font-size: 32px;
+    }
+}
