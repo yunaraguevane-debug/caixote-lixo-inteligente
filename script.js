@@ -1,282 +1,331 @@
 
+/* =====================================
+   CLI - CAIXOTE DO LIXO INTELIGENTE
+   ===================================== */
+
+// VALORES DEMONSTRATIVOS DOS SENSORES
+
+let nivelEnchimento = 0;
+let qualidadeAr = 100;
+
+// HISTORICO DO GRAFICO
+
+let historico = [];
+
+// ELEMENTOS HTML
+
 const nivelElemento = document.getElementById("nivel");
-const barraNivel = document.getElementById("barraNivel");
-const estadoEnchimento = document.getElementById("estadoEnchimento");
-const valorAr = document.getElementById("valorAr");
-const estadoAr = document.getElementById("estadoAr");
-const estadoGeral = document.getElementById("estadoGeral");
-const descricaoEstado = document.getElementById("descricaoEstado");
-const statusIcon = document.getElementById("statusIcon");
-const statusPill = document.getElementById("statusPill");
-const statusBanner = document.getElementById("statusBanner");
-const horaLeitura = document.getElementById("horaLeitura");
+const gasElemento = document.getElementById("gas");
+const estadoElemento = document.getElementById("estado");
+const estadoArElemento = document.getElementById("estadoAr");
+const descricaoArElemento = document.getElementById("descricaoAr");
+const descricaoEstadoElemento = document.getElementById("descricaoEstado");
+const ligacaoElemento = document.getElementById("ligacao");
+const atualizacaoElemento = document.getElementById("atualizacao");
+const barra = document.getElementById("barraNivel");
 
-const canvas = document.getElementById("grafico");
-const ctx = canvas.getContext("2d");
+// LIMITES DEMONSTRATIVOS
+// Estes valores terão de ser ajustados após calibrar o MQ-2.
 
-let nivel = 24;
-let gas = 650;
+const LIMITE_AR_ATENCAO = 150;
+const LIMITE_AR_ALERTA = 300;
 
-const historico = [];
-const MAX_PONTOS = 20;
 
-function horaAtual() {
-  return new Date().toLocaleTimeString("pt-PT", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  });
+// ATUALIZAR O PAINEL
+
+function atualizarPagina() {
+
+    // Atualizar valores
+
+    nivelElemento.textContent = nivelEnchimento;
+    gasElemento.textContent = qualidadeAr;
+
+    // Atualizar barra de enchimento
+
+    barra.style.width = nivelEnchimento + "%";
+
+    if (nivelEnchimento >= 90) {
+        barra.style.backgroundColor = "#d92d20";
+    } else if (nivelEnchimento >= 70) {
+        barra.style.backgroundColor = "#e5a000";
+    } else {
+        barra.style.backgroundColor = "#26774d";
+    }
+
+    // Atualizar qualidade do ar
+
+    if (qualidadeAr >= LIMITE_AR_ALERTA) {
+
+        estadoArElemento.textContent = "Má";
+        estadoArElemento.style.backgroundColor = "#fde8e6";
+        estadoArElemento.style.color = "#b42318";
+
+        descricaoArElemento.textContent = "Valor elevado detetado";
+
+    } else if (qualidadeAr >= LIMITE_AR_ATENCAO) {
+
+        estadoArElemento.textContent = "Atenção";
+        estadoArElemento.style.backgroundColor = "#fff3d6";
+        estadoArElemento.style.color = "#a66a08";
+
+        descricaoArElemento.textContent = "É necessário acompanhar os valores";
+
+    } else {
+
+        estadoArElemento.textContent = "Boa";
+        estadoArElemento.style.backgroundColor = "#e6f4e9";
+        estadoArElemento.style.color = "#26774d";
+
+        descricaoArElemento.textContent = "Valores dentro do intervalo demonstrativo";
+    }
+
+    // Atualizar estado geral do caixote
+
+    if (
+        nivelEnchimento >= 90 ||
+        qualidadeAr >= LIMITE_AR_ALERTA
+    ) {
+
+        estadoElemento.textContent = "ALERTA";
+        estadoElemento.className = "estado-geral estado-alerta";
+
+        descricaoEstadoElemento.textContent =
+            "É necessária uma intervenção.";
+
+    } else if (
+        nivelEnchimento >= 70 ||
+        qualidadeAr >= LIMITE_AR_ATENCAO
+    ) {
+
+        estadoElemento.textContent = "ATENÇÃO";
+        estadoElemento.className = "estado-geral estado-atencao";
+
+        descricaoEstadoElemento.textContent =
+            "O caixote necessita de acompanhamento.";
+
+    } else {
+
+        estadoElemento.textContent = "NORMAL";
+        estadoElemento.className = "estado-geral estado-normal";
+
+        descricaoEstadoElemento.textContent =
+            "O caixote encontra-se em estado normal.";
+    }
+
+    // Atualizar hora
+
+    const agora = new Date();
+
+    atualizacaoElemento.textContent =
+        "Atualizado às " +
+        agora.toLocaleTimeString("pt-PT", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
 }
 
-function adicionarLeitura() {
-  historico.push({
-    hora: horaAtual(),
-    valor: nivel
-  });
 
-  if (historico.length > MAX_PONTOS) {
-    historico.shift();
-  }
-}
-
-function atualizarEnchimento() {
-  nivelElemento.textContent = nivel;
-  barraNivel.style.width = nivel + "%";
-
-  if (nivel >= 90) {
-    barraNivel.style.background = "#dc6868";
-    estadoEnchimento.textContent = "Lixeira cheia";
-    estadoEnchimento.style.color = "#dc6868";
-  } else if (nivel >= 70) {
-    barraNivel.style.background = "#e8a34b";
-    estadoEnchimento.textContent = "Atenção";
-    estadoEnchimento.style.color = "#c58a39";
-  } else {
-    barraNivel.style.background = "#56ae7b";
-    estadoEnchimento.textContent = "Nível baixo";
-    estadoEnchimento.style.color = "#23795b";
-  }
-}
-
-function atualizarQualidadeAr() {
-  valorAr.textContent = gas;
-
-  if (gas >= 2500) {
-    estadoAr.innerHTML = '<span class="air-dot"></span> Qualidade crítica';
-    estadoAr.style.color = "#dc6868";
-    estadoAr.querySelector(".air-dot").style.background = "#dc6868";
-  } else if (gas >= 1500) {
-    estadoAr.innerHTML = '<span class="air-dot"></span> Atenção à qualidade';
-    estadoAr.style.color = "#c58a39";
-    estadoAr.querySelector(".air-dot").style.background = "#e8a34b";
-  } else {
-    estadoAr.innerHTML = '<span class="air-dot"></span> Boa qualidade';
-    estadoAr.style.color = "#23795b";
-    estadoAr.querySelector(".air-dot").style.background = "#56ae7b";
-  }
-}
-
-function atualizarEstadoGeral() {
-  const alertaEnchimento = nivel >= 90;
-  const avisoEnchimento = nivel >= 70;
-  const alertaAr = gas >= 2500;
-  const avisoAr = gas >= 1500;
-
-  if (alertaEnchimento || alertaAr) {
-    estadoGeral.textContent = "Atenção necessária";
-    descricaoEstado.textContent = "Foi detetada uma condição de alerta.";
-    statusIcon.textContent = "🚨";
-    statusPill.textContent = "ALERTA";
-    statusPill.style.background = "#713c3c";
-    statusPill.style.color = "#ffd0d0";
-    statusBanner.style.borderLeft = "4px solid #dc6868";
-  } else if (avisoEnchimento || avisoAr) {
-    estadoGeral.textContent = "Atenção";
-    descricaoEstado.textContent = "Um dos indicadores precisa de ser acompanhado.";
-    statusIcon.textContent = "⚠️";
-    statusPill.textContent = "AVISO";
-    statusPill.style.background = "#70562e";
-    statusPill.style.color = "#ffe0a8";
-    statusBanner.style.borderLeft = "4px solid #e8a34b";
-  } else {
-    estadoGeral.textContent = "Tudo sob controlo";
-    descricaoEstado.textContent = "Os indicadores encontram-se em níveis normais.";
-    statusIcon.textContent = "🌱";
-    statusPill.textContent = "NORMAL";
-    statusPill.style.background = "#285b43";
-    statusPill.style.color = "#a9edc3";
-    statusBanner.style.borderLeft = "4px solid #56ae7b";
-  }
-}
-
-function atualizarHora() {
-  horaLeitura.textContent = horaAtual();
-}
-
-function atualizarInterface() {
-  atualizarEnchimento();
-  atualizarQualidadeAr();
-  atualizarEstadoGeral();
-  atualizarHora();
-}
-
-function simularSensores() {
-  // Simulação do nível de enchimento
-  nivel += Math.floor(Math.random() * 5);
-
-  if (nivel > 100) {
-    nivel = 8;
-  }
-
-  // Simulação da leitura do MQ-2
-  const variacao = Math.floor(Math.random() * 301) - 150;
-  gas += variacao;
-
-  gas = Math.max(300, Math.min(3000, gas));
-
-  // Ocasionalmente, simula uma alteração maior na leitura
-  if (Math.random() < 0.12) {
-    gas = Math.floor(1400 + Math.random() * 1500);
-  }
-
-  adicionarLeitura();
-  atualizarInterface();
-  desenharGrafico();
-}
+// DESENHAR GRAFICO CURVILINEO
 
 function desenharGrafico() {
-  const largura = canvas.clientWidth;
-  const altura = canvas.clientHeight;
 
-  if (!largura || !altura) return;
+    const canvas = document.getElementById("grafico");
+    const ctx = canvas.getContext("2d");
 
-  const dpr = window.devicePixelRatio || 1;
+    // Adaptar o canvas ao tamanho do ecrã
 
-  canvas.width = largura * dpr;
-  canvas.height = altura * dpr;
+    const largura = canvas.clientWidth;
+    const altura = canvas.clientHeight;
+    const escala = window.devicePixelRatio || 1;
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, largura, altura);
+    canvas.width = largura * escala;
+    canvas.height = altura * escala;
 
-  const margem = { top: 12, right: 12, bottom: 30, left: 35 };
-  const graficoLargura = largura - margem.left - margem.right;
-  const graficoAltura = altura - margem.top - margem.bottom;
+    ctx.setTransform(escala, 0, 0, escala, 0, 0);
 
-  // Linhas horizontais e escala
-  ctx.font = "10px Manrope";
-  ctx.fillStyle = "#91a097";
-  ctx.textAlign = "right";
+    ctx.clearRect(0, 0, largura, altura);
 
-  [0, 25, 50, 75, 100].forEach(valor => {
-    const y = margem.top + graficoAltura * (1 - valor / 100);
+    const margemEsquerda = 42;
+    const margemDireita = 12;
+    const margemSuperior = 15;
+    const margemInferior = 20;
 
-    ctx.beginPath();
+    const larguraGrafico =
+        largura - margemEsquerda - margemDireita;
+
+    const alturaGrafico =
+        altura - margemSuperior - margemInferior;
+
+    // Linhas horizontais e escala
+
+    ctx.font = "11px Arial";
+    ctx.fillStyle = "#89968d";
     ctx.strokeStyle = "#edf1ed";
     ctx.lineWidth = 1;
-    ctx.setLineDash([4, 5]);
-    ctx.moveTo(margem.left, y);
-    ctx.lineTo(largemDireita(), y);
-    ctx.stroke();
-    ctx.setLineDash([]);
 
-    ctx.fillText(valor + "%", margem.left - 8, y + 3);
-  });
+    for (let valor = 0; valor <= 100; valor += 20) {
 
-  function largemDireita() {
-    return largura - margem.right;
-  }
+        const y =
+            margemSuperior +
+            alturaGrafico -
+            (valor / 100) * alturaGrafico;
 
-  if (historico.length < 2) return;
+        ctx.beginPath();
+        ctx.moveTo(margemEsquerda, y);
+        ctx.lineTo(largura - margemDireita, y);
+        ctx.stroke();
 
-  const pontos = historico.map((item, indice) => ({
-    x: margem.left + (indice / (MAX_PONTOS - 1)) * graficoLargura,
-    y: margem.top + graficoAltura * (1 - item.valor / 100),
-    valor: item.valor
-  }));
-
-  // Área preenchida
-  const gradiente = ctx.createLinearGradient(0, margem.top, 0, altura);
-  gradiente.addColorStop(0, "rgba(49, 150, 107, 0.23)");
-  gradiente.addColorStop(1, "rgba(49, 150, 107, 0.01)");
-
-  ctx.beginPath();
-  ctx.moveTo(pontos[0].x, margem.top + graficoAltura);
-
-  pontos.forEach(ponto => {
-    ctx.lineTo(ponto.x, ponto.y);
-  });
-
-  ctx.lineTo(pontos[pontos.length - 1].x, margem.top + graficoAltura);
-  ctx.closePath();
-  ctx.fillStyle = gradiente;
-  ctx.fill();
-
-  // Linha curva
-  ctx.beginPath();
-  ctx.moveTo(pontos[0].x, pontos[0].y);
-
-  for (let i = 1; i < pontos.length; i++) {
-    const anterior = pontos[i - 1];
-    const atual = pontos[i];
-    const meioX = (anterior.x + atual.x) / 2;
-
-    ctx.quadraticCurveTo(
-      anterior.x,
-      anterior.y,
-      meioX,
-      (anterior.y + atual.y) / 2
-    );
-  }
-
-  const ultimo = pontos[pontos.length - 1];
-  ctx.lineTo(ultimo.x, ultimo.y);
-
-  ctx.strokeStyle = "#31966b";
-  ctx.lineWidth = 3;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.stroke();
-
-  // Ponto da leitura mais recente
-  ctx.beginPath();
-  ctx.arc(ultimo.x, ultimo.y, 5, 0, Math.PI * 2);
-  ctx.fillStyle = "#ffffff";
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(ultimo.x, ultimo.y, 3, 0, Math.PI * 2);
-  ctx.fillStyle = "#23795b";
-  ctx.fill();
-
-  // Horas no eixo horizontal
-  ctx.fillStyle = "#91a097";
-  ctx.font = "9px Manrope";
-  ctx.textAlign = "center";
-
-  const indices = [0, Math.floor((historico.length - 1) / 2), historico.length - 1];
-
-  indices.forEach(indice => {
-    const ponto = pontos[indice];
-    if (ponto) {
-      ctx.fillText(historico[indice].hora, ponto.x, altura - 7);
+        ctx.fillText(valor + "%", 3, y + 4);
     }
-  });
+
+    if (historico.length === 0) {
+        return;
+    }
+
+    // Calcular posição dos pontos
+
+    const pontos = [];
+
+    for (let i = 0; i < historico.length; i++) {
+
+        const x = margemEsquerda +
+            (i / Math.max(historico.length - 1, 1)) *
+            larguraGrafico;
+
+        const y = margemSuperior +
+            alturaGrafico -
+            (historico[i] / 100) * alturaGrafico;
+
+        pontos.push({ x, y });
+    }
+
+    // Criar linha curva com curvas de Bézier
+
+    function desenharCurva() {
+
+        ctx.beginPath();
+        ctx.moveTo(pontos[0].x, pontos[0].y);
+
+        for (let i = 0; i < pontos.length - 1; i++) {
+
+            const pontoAtual = pontos[i];
+            const proximoPonto = pontos[i + 1];
+
+            const meioX =
+                (pontoAtual.x + proximoPonto.x) / 2;
+
+            const meioY =
+                (pontoAtual.y + proximoPonto.y) / 2;
+
+            ctx.quadraticCurveTo(
+                pontoAtual.x,
+                pontoAtual.y,
+                meioX,
+                meioY
+            );
+        }
+
+        const ultimo = pontos[pontos.length - 1];
+
+        ctx.lineTo(ultimo.x, ultimo.y);
+    }
+
+    // Preencher área por baixo da curva
+
+    desenharCurva();
+
+    ctx.lineTo(
+        pontos[pontos.length - 1].x,
+        margemSuperior + alturaGrafico
+    );
+
+    ctx.lineTo(
+        pontos[0].x,
+        margemSuperior + alturaGrafico
+    );
+
+    ctx.closePath();
+
+    const gradiente = ctx.createLinearGradient(
+        0,
+        margemSuperior,
+        0,
+        altura
+    );
+
+    gradiente.addColorStop(0, "rgba(38, 119, 77, 0.20)");
+    gradiente.addColorStop(1, "rgba(38, 119, 77, 0.01)");
+
+    ctx.fillStyle = gradiente;
+    ctx.fill();
+
+    // Desenhar linha principal
+
+    desenharCurva();
+
+    ctx.strokeStyle = "#26774d";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    // Desenhar último ponto
+
+    const ultimo = pontos[pontos.length - 1];
+
+    ctx.beginPath();
+    ctx.arc(ultimo.x, ultimo.y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = "#26774d";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(ultimo.x, ultimo.y, 9, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(38, 119, 77, 0.20)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
 }
 
-function iniciarDashboard() {
-  // Leituras iniciais para o gráfico não aparecer vazio
-  for (let i = 0; i < 10; i++) {
-    nivel = Math.max(0, Math.min(100, 20 + Math.floor(Math.random() * 15)));
-    adicionarLeitura();
-  }
 
-  nivel = 24;
-  atualizarInterface();
-  desenharGrafico();
+// SIMULAR SENSORES
 
-  // Atualização automática a cada 3 segundos
-  setInterval(simularSensores, 3000);
+function simularSensores() {
+
+    // Valores aleatórios para testar a interface.
+    // Posteriormente serão substituídos pelos dados do ESP32.
+
+    nivelEnchimento = Math.floor(Math.random() * 101);
+
+    qualidadeAr = Math.floor(Math.random() * 500);
+
+    // Guardar histórico do enchimento
+
+    historico.push(nivelEnchimento);
+
+    // Manter apenas os últimos 20 valores
+
+    if (historico.length > 20) {
+        historico.shift();
+    }
+
+    atualizarPagina();
+    desenharGrafico();
 }
 
-window.addEventListener("load", iniciarDashboard);
+
+// INDICAR MODO DE DEMONSTRAÇÃO
+
+ligacaoElemento.textContent =
+    "Modo de demonstração · Dados simulados";
+
+
+// INICIAR SISTEMA
+
+simularSensores();
+
+setInterval(simularSensores, 3000);
+
+
+// ATUALIZAR GRAFICO QUANDO A JANELA MUDA DE TAMANHO
+
 window.addEventListener("resize", desenharGrafico);
