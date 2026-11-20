@@ -1,4 +1,5 @@
 
+/* CONFIGURACAO GERAL */
 * {
     margin: 0;
     padding: 0;
@@ -6,129 +7,190 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f1f5f2;
-    color: #26352b;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f7f5;
+    color: #26352d;
+    line-height: 1.6;
 }
 
+/* CABECALHO */
 header {
-    background-color: #176b45;
+    background: linear-gradient(135deg, #123d2b, #18734b);
     color: white;
     text-align: center;
-    padding: 30px 15px;
+    padding: 45px 20px 50px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
 }
 
 header h1 {
-    font-size: 38px;
-    margin-bottom: 8px;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
 }
 
 header p {
-    font-size: 18px;
-    margin-bottom: 15px;
+    font-size: 19px;
+    color: #e0f1e7;
+    margin-bottom: 22px;
 }
 
 #ligacao {
+    display: inline-block;
     font-size: 13px;
-    background-color: white;
-    color: #176b45;
-    padding: 7px 14px;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 8px 17px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
 }
 
+/* CONTEUDO PRINCIPAL */
 main {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 0 20px;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 25px;
 }
 
+/* CARTOES DOS SENSORES */
 .sensores {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 25px;
 }
 
 .cartao {
-    background-color: white;
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    text-align: left;
+    border: 1px solid #e5ece7;
+    box-shadow: 0 5px 20px rgba(27, 70, 47, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cartao:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(27, 70, 47, 0.12);
 }
 
 .cartao h2 {
-    font-size: 18px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #52665a;
     margin-bottom: 20px;
 }
 
 .cartao p {
-    font-size: 38px;
-    font-weight: bold;
+    font-size: 44px;
+    font-weight: 750;
     color: #176b45;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    letter-spacing: -1px;
 }
 
 .cartao span {
     font-size: 13px;
-    color: #777;
+    color: #89958d;
 }
 
+/* ESTADO DO CAIXOTE */
 .estado {
-    background-color: white;
-    padding: 25px;
+    background: white;
+    padding: 28px;
     margin-top: 25px;
-    border-radius: 12px;
+    border-radius: 18px;
     text-align: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border: 1px solid #e5ece7;
+    box-shadow: 0 5px 20px rgba(27, 70, 47, 0.06);
 }
 
 .estado h2 {
-    margin-bottom: 15px;
+    font-size: 19px;
+    color: #52665a;
+    margin-bottom: 14px;
 }
 
 #estado {
-    font-size: 18px;
-    font-weight: bold;
+    display: inline-block;
+    font-size: 20px;
+    font-weight: 750;
+    letter-spacing: 1px;
+    padding: 9px 25px;
+    border-radius: 30px;
+    background: #eaf5ee;
     color: #176b45;
 }
 
+/* GRAFICO */
 .grafico {
-    background-color: white;
-    padding: 25px;
+    background: white;
+    padding: 30px;
     margin-top: 25px;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border-radius: 18px;
+    border: 1px solid #e5ece7;
+    box-shadow: 0 5px 20px rgba(27, 70, 47, 0.06);
 }
 
 .grafico h2 {
-    text-align: center;
-    margin-bottom: 20px;
+    font-size: 20px;
+    color: #26352d;
+    margin-bottom: 25px;
 }
 
 canvas {
+    display: block;
     width: 100%;
     height: auto;
 }
 
+/* RODAPE */
 footer {
-    background-color: #176b45;
-    color: white;
+    background: #123d2b;
+    color: #dcebe1;
     text-align: center;
-    padding: 20px;
-    margin-top: 40px;
+    padding: 24px 15px;
+    margin-top: 55px;
     font-size: 13px;
 }
 
-@media (max-width: 600px) {
-    .sensores {
-        grid-template-columns: 1fr;
+/* ADAPTACAO A TELEMOVEIS */
+@media (max-width: 650px) {
+    header {
+        padding: 35px 15px;
     }
 
     header h1 {
-        font-size: 30px;
+        font-size: 34px;
+    }
+
+    header p {
+        font-size: 16px;
+    }
+
+    main {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .sensores {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .cartao {
+        padding: 25px;
     }
 
     .cartao p {
-        font-size: 32px;
+        font-size: 38px;
+    }
+
+    .grafico {
+        padding: 20px;
+    }
+
+    .estado {
+        padding: 22px;
     }
 }
