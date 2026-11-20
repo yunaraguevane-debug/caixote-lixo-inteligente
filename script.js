@@ -1,262 +1,564 @@
 
-// ======================================
-// CAIXOTE DO LIXO INTELIGENTE
-// MODO DE DEMONSTRAÇÃO
-// ======================================
+/* =====================================
+   CLI - CAIXOTE DO LIXO INTELIGENTE
+   ===================================== */
 
-// Elementos da página
+// ELEMENTOS HTML
+
 const nivelElemento = document.getElementById("nivel");
-const barraElemento = document.getElementById("barra-nivel");
 const gasElemento = document.getElementById("gas");
+
 const estadoElemento = document.getElementById("estado");
-const estadoSimbolo = document.getElementById("estado-simbolo");
-const grafico = document.getElementById("grafico");
+const estadoArElemento = document.getElementById("estadoAr");
 
-const ctx = grafico.getContext("2d");
+const descricaoArElemento = document.getElementById("descricaoAr");
+const descricaoEstadoElemento = document.getElementById("descricaoEstado");
 
-// Valores iniciais
-let nivel = 24;
-let gas = 650;
+const ligacaoElemento = document.getElementById("ligacao");
+const atualizacaoElemento = document.getElementById("atualizacao");
 
-// Histórico do gráfico
-const historico = [];
+const barra = document.getElementById("barraNivel");
+const simboloEstado = document.getElementById("simboloEstado");
 
-const INTERVALO = 2000;
+const canvas = document.getElementById("grafico");
+const ctx = canvas.getContext("2d");
+
+const tempoInicialElemento = document.getElementById("tempoInicial");
+const tempoFinalElemento = document.getElementById("tempoFinal");
+
+
+// VALORES INICIAIS DOS SENSORES
+
+let nivelEnchimento = 24;
+let qualidadeAr = 650;
+
+
+// HISTORICO DO GRAFICO
+
+let historico = [];
+
 const MAX_PONTOS = 40;
+const INTERVALO = 3000;
 
-// ======================================
-// ATUALIZAR NÍVEL DE ENCHIMENTO
-// ======================================
 
-function atualizarNivel() {
+// LIMITES DEMONSTRATIVOS DO MQ-2
 
-    // O nível aumenta gradualmente
-    if (nivel < 100) {
-        nivel += 0.2 + Math.random() * 0.3;
-    }
+// Estes limites são provisórios.
+// Devem ser ajustados depois de testar e calibrar o sensor.
 
-    nivel = Math.min(nivel, 100);
+const LIMITE_AR_ATENCAO = 1500;
+const LIMITE_AR_ALERTA = 2500;
 
-    nivelElemento.textContent = nivel.toFixed(1) + "%";
-    barraElemento.style.width = nivel + "%";
 
-    if (nivel >= 90) {
-        barraElemento.style.background = "#dc5252";
-    } else if (nivel >= 70) {
-        barraElemento.style.background = "#e5ae43";
-    } else {
-        barraElemento.style.background = "#56a879";
-    }
-}
+// FORMATAR HORA
 
-// ======================================
-// ATUALIZAR SENSOR MQ-2
-// ======================================
+function obterHora(data = new Date()) {
 
-function atualizarGas() {
-
-    // Pequenas variações para simular o sensor
-    gas += Math.random() * 30 - 15;
-
-    gas = Math.max(300, Math.min(4095, gas));
-
-    gasElemento.textContent = Math.round(gas) + " ADC";
-}
-
-// ======================================
-// ATUALIZAR ESTADO DO CAIXOTE
-// ======================================
-
-function atualizarEstado() {
-
-    if (nivel >= 90 || gas >= 2500) {
-
-        estadoElemento.textContent = "Alerta";
-        estadoSimbolo.textContent = "🚨";
-
-    } else if (nivel >= 70 || gas >= 1500) {
-
-        estadoElemento.textContent = "Atenção";
-        estadoSimbolo.textContent = "⚠️";
-
-    } else {
-
-        estadoElemento.textContent = "Normal";
-        estadoSimbolo.textContent = "🌱";
-    }
-}
-
-// ======================================
-// REGISTAR LEITURAS
-// ======================================
-
-function registarLeitura() {
-
-    historico.push({
-        tempo: Date.now(),
-        nivel: nivel
+    return data.toLocaleTimeString("pt-PT", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
     });
-
-    if (historico.length > MAX_PONTOS) {
-        historico.shift();
-    }
 }
 
-// ======================================
-// DESENHAR GRÁFICO
-// ======================================
+
+// ATUALIZAR O PAINEL
+
+function atualizarPagina() {
+
+    // ENCHIMENTO
+
+    const nivelApresentado = Math.round(nivelEnchimento);
+
+    nivelElemento.textContent = nivelApresentado;
+
+    barra.style.width = nivelEnchimento + "%";
+
+    if (nivelEnchimento >= 90) {
+
+        barra.style.backgroundColor = "#d92d20";
+
+    } else if (nivelEnchimento >= 70) {
+
+        barra.style.backgroundColor = "#e5a000";
+
+    } else {
+
+        barra.style.backgroundColor = "#26774d";
+    }
+
+
+    // QUALIDADE DO AR
+
+    gasElemento.textContent = qualidadeAr;
+
+    if (qualidadeAr >= LIMITE_AR_ALERTA) {
+
+        estadoArElemento.textContent = "Leitura elevada";
+
+        estadoArElemento.style.backgroundColor = "#fde8e6";
+        estadoArElemento.style.color = "#b42318";
+
+        descricaoArElemento.textContent =
+            "Valor elevado detetado pelo sensor.";
+
+    } else if (qualidadeAr >= LIMITE_AR_ATENCAO) {
+
+        estadoArElemento.textContent = "Atenção";
+
+        estadoArElemento.style.backgroundColor = "#fff3d6";
+        estadoArElemento.style.color = "#a66a08";
+
+        descricaoArElemento.textContent =
+            "A leitura merece acompanhamento.";
+
+    } else {
+
+        estadoArElemento.textContent = "Leitura baixa";
+
+        estadoArElemento.style.backgroundColor = "#e6f4e9";
+        estadoArElemento.style.color = "#26774d";
+
+        descricaoArElemento.textContent =
+            "Valor dentro do intervalo demonstrativo.";
+    }
+
+
+    // ESTADO GERAL DO CAIXOTE
+
+    if (
+        nivelEnchimento >= 90 ||
+        qualidadeAr >= LIMITE_AR_ALERTA
+    ) {
+
+        estadoElemento.textContent = "ALERTA";
+
+        estadoElemento.className =
+            "estado-geral estado-alerta";
+
+        simboloEstado.textContent = "🚨";
+
+        simboloEstado.className =
+            "estado-simbolo simbolo-alerta";
+
+        descricaoEstadoElemento.textContent =
+            "É necessária uma intervenção no caixote.";
+
+    } else if (
+        nivelEnchimento >= 70 ||
+        qualidadeAr >= LIMITE_AR_ATENCAO
+    ) {
+
+        estadoElemento.textContent = "ATENÇÃO";
+
+        estadoElemento.className =
+            "estado-geral estado-atencao";
+
+        simboloEstado.textContent = "⚠️";
+
+        simboloEstado.className =
+            "estado-simbolo simbolo-atencao";
+
+        descricaoEstadoElemento.textContent =
+            "Um dos indicadores necessita de acompanhamento.";
+
+    } else {
+
+        estadoElemento.textContent = "NORMAL";
+
+        estadoElemento.className =
+            "estado-geral estado-normal";
+
+        simboloEstado.textContent = "🌱";
+
+        simboloEstado.className =
+            "estado-simbolo";
+
+        descricaoEstadoElemento.textContent =
+            "O caixote encontra-se em estado normal.";
+    }
+
+
+    // HORA DA ULTIMA ATUALIZACAO
+
+    atualizacaoElemento.textContent =
+        "Atualizado às " + obterHora();
+}
+
+
+// DESENHAR O GRAFICO
 
 function desenharGrafico() {
 
-    const largura = grafico.clientWidth;
-    const altura = grafico.clientHeight;
+    const largura = canvas.clientWidth;
+    const altura = canvas.clientHeight;
+
+    if (!largura || !altura) {
+        return;
+    }
+
+    // Adaptar o canvas ao ecrã e à resolução do dispositivo
 
     const escala = window.devicePixelRatio || 1;
 
-    grafico.width = largura * escala;
-    grafico.height = altura * escala;
+    canvas.width = Math.round(largura * escala);
+    canvas.height = Math.round(altura * escala);
 
     ctx.setTransform(escala, 0, 0, escala, 0, 0);
 
     ctx.clearRect(0, 0, largura, altura);
 
-    if (historico.length < 2) return;
 
-    const margem = 35;
-    const larguraUtil = largura - margem * 2;
-    const alturaUtil = altura - margem * 2;
+    // MARGENS DO GRAFICO
 
-    const inicio = historico[0].tempo;
-    const fim = historico[historico.length - 1].tempo;
-    const duracao = fim - inicio || 1;
+    const margemEsquerda = 42;
+    const margemDireita = 12;
+    const margemSuperior = 15;
+    const margemInferior = 30;
 
-    // Linhas horizontais de referência
-    ctx.strokeStyle = "#e7eee8";
+    const larguraGrafico =
+        largura - margemEsquerda - margemDireita;
+
+    const alturaGrafico =
+        altura - margemSuperior - margemInferior;
+
+
+    // ESCALA VERTICAL
+
+    ctx.font = "10px Arial";
+    ctx.fillStyle = "#89968d";
+    ctx.strokeStyle = "#edf1ed";
     ctx.lineWidth = 1;
 
-    for (let i = 0; i <= 4; i++) {
+    for (let valor = 0; valor <= 100; valor += 20) {
 
-        const y = margem + (alturaUtil / 4) * i;
+        const y =
+            margemSuperior +
+            alturaGrafico -
+            (valor / 100) * alturaGrafico;
 
         ctx.beginPath();
-        ctx.moveTo(margem, y);
-        ctx.lineTo(largura - margem, y);
+
+        ctx.moveTo(margemEsquerda, y);
+        ctx.lineTo(largura - margemDireita, y);
+
         ctx.stroke();
+
+        ctx.textAlign = "right";
+
+        ctx.fillText(
+            valor + "%",
+            margemEsquerda - 8,
+            y + 4
+        );
     }
 
-    // Coordenadas dos pontos
-    const pontos = historico.map(leitura => {
 
-        const x = margem +
-            ((leitura.tempo - inicio) / duracao) * larguraUtil;
+    // PRECISA DE PELO MENOS DOIS PONTOS
 
-        const y = altura - margem -
-            (leitura.nivel / 100) * alturaUtil;
+    if (historico.length < 2) {
+        return;
+    }
+
+
+    // CALCULAR POSICAO DOS PONTOS EM FUNCAO DO TEMPO
+
+    const primeiroTempo = historico[0].tempo.getTime();
+
+    const ultimoTempo =
+        historico[historico.length - 1].tempo.getTime();
+
+    const intervaloTotal = ultimoTempo - primeiroTempo;
+
+    if (intervaloTotal <= 0) {
+        return;
+    }
+
+    const pontos = historico.map(item => {
+
+        const tempo = item.tempo.getTime();
+
+        const proporcao =
+            (tempo - primeiroTempo) / intervaloTotal;
+
+        const x =
+            margemEsquerda + proporcao * larguraGrafico;
+
+        const y =
+            margemSuperior +
+            alturaGrafico -
+            (item.valor / 100) * alturaGrafico;
 
         return { x, y };
     });
 
-    // Área preenchida
-    ctx.beginPath();
-    ctx.moveTo(pontos[0].x, altura - margem);
 
-    pontos.forEach(ponto => {
-        ctx.lineTo(ponto.x, ponto.y);
-    });
+    // DESENHAR A CURVA SUAVE
 
-    ctx.lineTo(pontos[pontos.length - 1].x, altura - margem);
+    function desenharCurva() {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            pontos[0].x,
+            pontos[0].y
+        );
+
+        for (let i = 0; i < pontos.length - 1; i++) {
+
+            const atual = pontos[i];
+            const seguinte = pontos[i + 1];
+
+            const meioX =
+                (atual.x + seguinte.x) / 2;
+
+            const meioY =
+                (atual.y + seguinte.y) / 2;
+
+            ctx.quadraticCurveTo(
+                atual.x,
+                atual.y,
+                meioX,
+                meioY
+            );
+        }
+
+        const ultimo = pontos[pontos.length - 1];
+
+        ctx.lineTo(
+            ultimo.x,
+            ultimo.y
+        );
+    }
+
+
+    // AREA PREENCHIDA COM GRADIENTE
+
+    desenharCurva();
+
+    const ultimo = pontos[pontos.length - 1];
+
+    ctx.lineTo(
+        ultimo.x,
+        margemSuperior + alturaGrafico
+    );
+
+    ctx.lineTo(
+        pontos[0].x,
+        margemSuperior + alturaGrafico
+    );
+
     ctx.closePath();
 
-    const gradiente = ctx.createLinearGradient(0, margem, 0, altura);
+    const gradiente = ctx.createLinearGradient(
+        0,
+        margemSuperior,
+        0,
+        altura
+    );
 
-    gradiente.addColorStop(0, "rgba(76, 150, 105, 0.25)");
-    gradiente.addColorStop(1, "rgba(76, 150, 105, 0.02)");
+    gradiente.addColorStop(
+        0,
+        "rgba(38, 119, 77, 0.20)"
+    );
+
+    gradiente.addColorStop(
+        1,
+        "rgba(38, 119, 77, 0.01)"
+    );
 
     ctx.fillStyle = gradiente;
     ctx.fill();
 
-    // Linha curva
-    ctx.beginPath();
-    ctx.moveTo(pontos[0].x, pontos[0].y);
 
-    for (let i = 1; i < pontos.length; i++) {
+    // LINHA PRINCIPAL
 
-        const anterior = pontos[i - 1];
-        const atual = pontos[i];
+    desenharCurva();
 
-        const meio = (anterior.x + atual.x) / 2;
-
-        ctx.quadraticCurveTo(
-            meio,
-            anterior.y,
-            atual.x,
-            atual.y
-        );
-    }
-
-    ctx.strokeStyle = "#4c9669";
-    ctx.lineWidth = 2.5;
-    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#26774d";
+    ctx.lineWidth = 3;
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
     ctx.stroke();
 
-    // Eixo temporal
-    ctx.fillStyle = "#849087";
-    ctx.font = "11px sans-serif";
+
+    // ULTIMO PONTO DO GRAFICO
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ultimo.x,
+        ultimo.y,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle = "#26774d";
+    ctx.fill();
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ultimo.x,
+        ultimo.y,
+        9,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.strokeStyle = "rgba(38, 119, 77, 0.20)";
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+
+
+    // TEMPO NO EIXO HORIZONTAL
+
+    const indices = [
+        0,
+        Math.floor((historico.length - 1) / 2),
+        historico.length - 1
+    ];
+
+    ctx.font = "9px Arial";
+    ctx.fillStyle = "#89968d";
     ctx.textAlign = "center";
 
-    const etiquetas = 4;
+    indices.forEach(indice => {
 
-    for (let i = 0; i <= etiquetas; i++) {
-
-        const tempo = inicio + (duracao / etiquetas) * i;
-        const data = new Date(tempo);
-
-        const horas = String(data.getHours()).padStart(2, "0");
-        const minutos = String(data.getMinutes()).padStart(2, "0");
-        const segundos = String(data.getSeconds()).padStart(2, "0");
-
-        const x = margem + (larguraUtil / etiquetas) * i;
+        const item = historico[indice];
+        const ponto = pontos[indice];
 
         ctx.fillText(
-            `${horas}:${minutos}:${segundos}`,
-            x,
-            altura - 8
+            obterHora(item.tempo),
+            ponto.x,
+            altura - 7
         );
-    }
+    });
+
+
+    // ATUALIZAR INDICACAO DE TEMPO
+
+    tempoInicialElemento.textContent =
+        obterHora(historico[0].tempo);
+
+    tempoFinalElemento.textContent =
+        obterHora(historico[historico.length - 1].tempo);
 }
 
-// ======================================
-// ATUALIZAR TODO O SISTEMA
-// ======================================
 
-function atualizarSistema() {
+// SIMULAR SENSORES
 
-    atualizarNivel();
-    atualizarGas();
-    atualizarEstado();
+function simularSensores() {
 
-    registarLeitura();
+    /*
+       O enchimento aumenta lentamente.
+       A variação é pequena em cada leitura de 3 segundos.
+
+       O nível não diminui automaticamente.
+       Quando chega a 100%, permanece cheio.
+    */
+
+    const aumento =
+        0.02 + Math.random() * 0.06;
+
+    nivelEnchimento = Math.min(
+        100,
+        nivelEnchimento + aumento
+    );
+
+
+    // SIMULACAO DO MQ-2
+
+    // Pequenas oscilações na leitura ADC
+
+    const variacaoAr =
+        Math.floor(Math.random() * 31) - 15;
+
+    qualidadeAr = Math.max(
+        300,
+        Math.min(
+            4095,
+            qualidadeAr + variacaoAr
+        )
+    );
+
+
+    // GUARDAR LEITURA E HORA
+
+    historico.push({
+        valor: nivelEnchimento,
+        tempo: new Date()
+    });
+
+
+    // MANTER APENAS AS ULTIMAS 40 LEITURAS
+
+    if (historico.length > MAX_PONTOS) {
+        historico.shift();
+    }
+
+
+    // ATUALIZAR PAGINA
+
+    atualizarPagina();
     desenharGrafico();
 }
 
-// ======================================
-// INICIAR DEMONSTRAÇÃO
-// ======================================
 
-// Criar histórico inicial
-for (let i = 0; i < MAX_PONTOS; i++) {
+// CRIAR HISTORICO INICIAL
 
-    historico.push({
-        tempo: Date.now() - (MAX_PONTOS - i) * INTERVALO,
-        nivel: nivel - (MAX_PONTOS - i) * 0.15
-    });
+function iniciarHistorico() {
+
+    const agora = Date.now();
+
+    historico = [];
+
+    for (let i = 0; i < MAX_PONTOS; i++) {
+
+        const valorInicial =
+            24 - (MAX_PONTOS - 1 - i) * 0.025;
+
+        const tempoAnterior =
+            agora - (MAX_PONTOS - 1 - i) * INTERVALO;
+
+        historico.push({
+            valor: Math.max(0, valorInicial),
+            tempo: new Date(tempoAnterior)
+        });
+    }
 }
 
-atualizarSistema();
 
-// Atualizar a cada 2 segundos
-setInterval(atualizarSistema, INTERVALO);
+// MODO DE DEMONSTRACAO
 
-// Redesenhar quando o tamanho do ecrã mudar
+ligacaoElemento.textContent =
+    "Modo de demonstração · Dados simulados";
+
+
+// INICIAR SISTEMA
+
+function iniciarSistema() {
+
+    iniciarHistorico();
+
+    atualizarPagina();
+
+    desenharGrafico();
+
+    // Atualizar sensores de 3 em 3 segundos
+
+    setInterval(simularSensores, INTERVALO);
+}
+
+
+// INICIAR QUANDO A PAGINA ESTIVER CARREGADA
+
+window.addEventListener("load", iniciarSistema);
+
+
+// REDIMENSIONAR GRAFICO
+
 window.addEventListener("resize", desenharGrafico);
