@@ -18,6 +18,22 @@ function atualizarPagina() {
     nivelElemento.textContent = nivelEnchimento + "%";
     gasElemento.textContent = qualidadeAr;
 
+    // Atualizar a barra de enchimento
+let barra = document.getElementById("barraNivel");
+
+barra.style.width = nivelEnchimento + "%";
+
+// Alterar a cor conforme o enchimento
+if (nivelEnchimento >= 90) {
+    barra.style.backgroundColor = "#d92d20";
+}
+else if (nivelEnchimento >= 70) {
+    barra.style.backgroundColor = "#e5a000";
+}
+else {
+    barra.style.backgroundColor = "#176b45";
+}
+
     if (nivelEnchimento >= 90 || qualidadeAr > 300) {
         estadoElemento.textContent = "ALERTA";
         estadoElemento.style.color = "#b42318";
