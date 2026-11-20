@@ -4,58 +4,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLI - Caixote Inteligente</title>
+    <meta name="theme-color" content="#f3f7f2">
+    <title>CLI | Caixote do Lixo Inteligente</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <header>
-        <h1>CLI</h1>
-        <p>Caixote do Lixo Inteligente</p>
-        <span id="ligacao">A aguardar ligação ao ESP32...</span>
+    <header class="topo">
+        <div class="marca">
+            <div class="icone-folha">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                    <path d="M53 8C28 8 12 18 12 37c0 10 7 17 17 17C48 54 56 31 53 8Z"
+                          fill="#83bd8a"/>
+                    <path d="M8 57C18 40 30 29 47 17"
+                          fill="none" stroke="#176b45"
+                          stroke-width="3" stroke-linecap="round"/>
+                    <path d="M27 38l-1-12M36 30l12 1"
+                          fill="none" stroke="#176b45"
+                          stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <div>
+                <h1>CLI</h1>
+                <p>Caixote do Lixo Inteligente</p>
+            </div>
+        </div>
+
+        <div class="ligacao">
+            <span class="ponto-ligacao"></span>
+            <span id="ligacao">A iniciar sistema...</span>
+        </div>
     </header>
 
-    <main>
-        <section class="sensores">
-            <div class="cartao">
-    <h2>Nível de enchimento</h2>
+    <main class="conteudo">
 
-    <p id="nivel">--%</p>
+        <section class="introducao">
+            <div>
+                <span class="etiqueta">MONITORIZAÇÃO INTELIGENTE</span>
+                <h2>O ambiente começa com <span>pequenas ações.</span></h2>
+                <p>
+                    Acompanha o nível de enchimento e a qualidade do ar
+                    do teu caixote em tempo real.
+                </p>
+            </div>
 
-    <div class="barra-progresso">
-        <div id="barraNivel"></div>
-    </div>
-
-    <div class="escala">
-        <span>0% - Vazio</span>
-        <span>100% - Cheio</span>
-    </div>
-
-    <span>Sensor ultrassónico HC-SR04</span>
-</div>
-
-            <div class="cartao">
-                <h2>Qualidade do ar</h2>
-                <p id="gas">--</p>
-                <span>Sensor de gás MQ-2</span>
+            <div class="decoracao">
+                <span>♻</span>
+                <small>TECNOLOGIA SUSTENTÁVEL</small>
             </div>
         </section>
 
-        <section class="estado">
-            <h2>Estado do caixote</h2>
-            <p id="estado">A aguardar dados...</p>
+        <section class="resumo">
+            <div class="titulo-seccao">
+                <div>
+                    <span class="etiqueta">PAINEL DE CONTROLO</span>
+                    <h2>Estado dos sensores</h2>
+                </div>
+                <span class="atualizacao" id="atualizacao">
+                    A aguardar dados
+                </span>
+            </div>
+
+            <div class="cartoes">
+
+                <!-- CARTÃO DO ENCHIMENTO -->
+                <article class="cartao">
+                    <div class="cartao-topo">
+                        <div class="icone-cartao verde">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 7h16M9 7V4h6v3m-9 0 1 14h10l1-14M10 11v6m4-6v6"
+                                      fill="none" stroke="currentColor"
+                                      stroke-width="1.8" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="categoria">ENCHIMENTO</span>
+                    </div>
+
+                    <h3>Nível de enchimento</h3>
+                    <div class="valor">
+                        <span id="nivel">--</span><small>%</small>
+                    </div>
+
+                    <div class="barra-progresso">
+                        <div id="barraNivel"></div>
+                    </div>
+
+                    <div class="escala">
+                        <span>Vazio</span>
+                        <span>Cheio</span>
+                    </div>
+
+                    <div class="cartao-rodape">
+                        <span class="mini-ponto"></span>
+                        Sensor ultrassónico HC-SR04
+                    </div>
+                </article>
+
+                <!-- CARTÃO DA QUALIDADE DO AR -->
+                <article class="cartao">
+                    <div class="cartao-topo">
+                        <div class="icone-cartao azul">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 9h11a3 3 0 1 0-3-3M3 14h15a3 3 0 1 1-3 3M3 19h6"
+                                      fill="none" stroke="currentColor"
+                                      stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="categoria">QUALIDADE DO AR</span>
+                    </div>
+
+                    <h3>Qualidade do ar</h3>
+                    <div class="valor valor-gas">
+                        <span id="gas">--</span>
+                        <small>unid.</small>
+                    </div>
+
+                    <div class="estado-ar" id="estadoAr">
+                        A analisar...
+                    </div>
+
+                    <p class="descricao-ar" id="descricaoAr">
+                        A aguardar leitura do sensor
+                    </p>
+
+                    <div class="cartao-rodape">
+                        <span class="mini-ponto azul-ponto"></span>
+                        Sensor de gás MQ-2
+                    </div>
+                </article>
+
+                <!-- CARTÃO DO ESTADO GERAL -->
+                <article class="cartao cartao-estado">
+                    <div class="cartao-topo">
+                        <div class="icone-cartao amarelo">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 3 2.8 20h18.4L12 3Z"
+                                      fill="none" stroke="currentColor"
+                                      stroke-width="1.8" stroke-linejoin="round"/>
+                                <path d="M12 9v5m0 3h.01"
+                                      stroke="currentColor" stroke-width="2"
+                                      stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="categoria">ESTADO GERAL</span>
+                    </div>
+
+                    <h3>Estado do caixote</h3>
+
+                    <div class="estado-geral" id="estado">
+                        A aguardar dados...
+                    </div>
+
+                    <p class="descricao-estado" id="descricaoEstado">
+                        O sistema irá indicar o estado do caixote.
+                    </p>
+
+                    <div class="cartao-rodape">
+                        <span class="mini-ponto amarelo-ponto"></span>
+                        Monitorização automática
+                    </div>
+                </article>
+
+            </div>
         </section>
 
-        <section class="grafico">
-            <h2>Monitorização em tempo real</h2>
-            <canvas id="grafico" width="700" height="300"></canvas>
+        <!-- GRAFICO -->
+        <section class="grafico-cartao">
+            <div class="grafico-cabecalho">
+                <div>
+                    <span class="etiqueta">DADOS AO LONGO DO TEMPO</span>
+                    <h2>Evolução do enchimento</h2>
+                    <p>Acompanha as variações do nível do caixote.</p>
+                </div>
+
+                <div class="legenda">
+                    <span></span>
+                    Nível de enchimento
+                </div>
+            </div>
+
+            <div class="grafico-area">
+                <canvas id="grafico"></canvas>
+            </div>
+
+            <div class="grafico-rodape">
+                <span>0% — Vazio</span>
+                <span>100% — Cheio</span>
+            </div>
         </section>
+
+        <section class="nota">
+            <div class="nota-icone">🌱</div>
+            <div>
+                <h3>Gestão inteligente de resíduos</h3>
+                <p>
+                    O CLI pretende facilitar a monitorização dos resíduos,
+                    permitindo identificar quando é necessário efetuar a recolha.
+                </p>
+            </div>
+        </section>
+
     </main>
 
     <footer>
-        <p>Projeto CLI - DEEC | Universidade de Coimbra</p>
+        <div class="footer-marca">
+            <span>CLI</span>
+            <p>Caixote do Lixo Inteligente</p>
+        </div>
+        <p>Projeto académico · DEEC · Universidade de Coimbra · 2026/2027</p>
     </footer>
 
     <script src="script.js"></script>
+
 </body>
 </html>
