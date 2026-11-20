@@ -5,7 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#f3f7f2">
+    <meta name="description" content="CLI - Monitorização inteligente do enchimento e da qualidade do ar.">
     <title>CLI | Caixote do Lixo Inteligente</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -62,6 +68,7 @@
                     <span class="etiqueta">PAINEL DE CONTROLO</span>
                     <h2>Estado dos sensores</h2>
                 </div>
+
                 <span class="atualizacao" id="atualizacao">
                     A aguardar dados
                 </span>
@@ -69,7 +76,8 @@
 
             <div class="cartoes">
 
-                <!-- CARTÃO DO ENCHIMENTO -->
+                <!-- CARTAO DO ENCHIMENTO -->
+
                 <article class="cartao">
                     <div class="cartao-topo">
                         <div class="icone-cartao verde">
@@ -80,12 +88,15 @@
                                       stroke-linejoin="round"/>
                             </svg>
                         </div>
+
                         <span class="categoria">ENCHIMENTO</span>
                     </div>
 
                     <h3>Nível de enchimento</h3>
+
                     <div class="valor">
-                        <span id="nivel">--</span><small>%</small>
+                        <span id="nivel">--</span>
+                        <small>%</small>
                     </div>
 
                     <div class="barra-progresso">
@@ -103,7 +114,8 @@
                     </div>
                 </article>
 
-                <!-- CARTÃO DA QUALIDADE DO AR -->
+                <!-- CARTAO DA QUALIDADE DO AR -->
+
                 <article class="cartao">
                     <div class="cartao-topo">
                         <div class="icone-cartao azul">
@@ -113,13 +125,15 @@
                                       stroke-width="1.8" stroke-linecap="round"/>
                             </svg>
                         </div>
+
                         <span class="categoria">QUALIDADE DO AR</span>
                     </div>
 
                     <h3>Qualidade do ar</h3>
+
                     <div class="valor valor-gas">
                         <span id="gas">--</span>
-                        <small>unid.</small>
+                        <small>ADC</small>
                     </div>
 
                     <div class="estado-ar" id="estadoAr">
@@ -136,7 +150,8 @@
                     </div>
                 </article>
 
-                <!-- CARTÃO DO ESTADO GERAL -->
+                <!-- CARTAO DO ESTADO GERAL -->
+
                 <article class="cartao cartao-estado">
                     <div class="cartao-topo">
                         <div class="icone-cartao amarelo">
@@ -149,17 +164,22 @@
                                       stroke-linecap="round"/>
                             </svg>
                         </div>
+
                         <span class="categoria">ESTADO GERAL</span>
                     </div>
 
                     <h3>Estado do caixote</h3>
 
-                    <div class="estado-geral" id="estado">
-                        A aguardar dados...
+                    <div class="estado-visual">
+                        <div class="estado-simbolo" id="simboloEstado">🌱</div>
+
+                        <div class="estado-geral estado-normal" id="estado">
+                            NORMAL
+                        </div>
                     </div>
 
                     <p class="descricao-estado" id="descricaoEstado">
-                        O sistema irá indicar o estado do caixote.
+                        O caixote encontra-se em estado normal.
                     </p>
 
                     <div class="cartao-rodape">
@@ -172,12 +192,13 @@
         </section>
 
         <!-- GRAFICO -->
+
         <section class="grafico-cartao">
             <div class="grafico-cabecalho">
                 <div>
                     <span class="etiqueta">DADOS AO LONGO DO TEMPO</span>
                     <h2>Evolução do enchimento</h2>
-                    <p>Acompanha as variações do nível do caixote.</p>
+                    <p>Acompanha a evolução gradual do nível do caixote.</p>
                 </div>
 
                 <div class="legenda">
@@ -187,17 +208,21 @@
             </div>
 
             <div class="grafico-area">
-                <canvas id="grafico"></canvas>
+                <canvas id="grafico" role="img"
+                        aria-label="Gráfico da evolução do nível de enchimento ao longo do tempo">
+                    Gráfico do nível de enchimento.
+                </canvas>
             </div>
 
             <div class="grafico-rodape">
-                <span>0% — Vazio</span>
-                <span>100% — Cheio</span>
+                <span id="tempoInicial">Início</span>
+                <span id="tempoFinal">Última leitura</span>
             </div>
         </section>
 
         <section class="nota">
             <div class="nota-icone">🌱</div>
+
             <div>
                 <h3>Gestão inteligente de resíduos</h3>
                 <p>
@@ -214,6 +239,7 @@
             <span>CLI</span>
             <p>Caixote do Lixo Inteligente</p>
         </div>
+
         <p>Projeto académico · DEEC · Universidade de Coimbra · 2026/2027</p>
     </footer>
 
