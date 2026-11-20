@@ -1,6 +1,4 @@
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-
 :root {
     --verde: #176b45;
     --verde-claro: #e6f3e9;
@@ -263,8 +261,9 @@ body {
 }
 
 .valor small {
-    font-size: 17px;
+    font-size: 15px;
     color: #829187;
+    font-weight: 700;
 }
 
 .valor-gas span {
@@ -313,6 +312,7 @@ body {
     height: 7px;
     border-radius: 50%;
     background: #55a875;
+    flex-shrink: 0;
 }
 
 .azul-ponto {
@@ -323,7 +323,7 @@ body {
     background: #dca83c;
 }
 
-/* ESTADO DA QUALIDADE DO AR */
+/* QUALIDADE DO AR */
 
 .estado-ar {
     display: inline-block;
@@ -341,19 +341,71 @@ body {
     color: #89968d;
     margin-top: 11px;
     min-height: 16px;
+    line-height: 1.6;
 }
 
-/* ESTADO GERAL */
+/* CARTAO DO ESTADO GERAL */
+
+.cartao-estado {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #ffffff 60%, #f2f8f1);
+}
+
+.cartao-estado .cartao-topo {
+    flex-direction: column;
+    justify-content: center;
+    gap: 9px;
+    margin-bottom: 15px;
+}
+
+.cartao-estado h3 {
+    font-size: 15px;
+    color: #405d49;
+}
+
+.estado-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 17px;
+}
+
+.estado-simbolo {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 31px;
+    background: #e6f4e9;
+    box-shadow: 0 0 0 8px #e6f4e955;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.estado-simbolo.simbolo-atencao {
+    background: #fff3d6;
+    box-shadow: 0 0 0 8px #fff3d655;
+}
+
+.estado-simbolo.simbolo-alerta {
+    background: #fde8e6;
+    box-shadow: 0 0 0 8px #fde8e655;
+}
 
 .estado-geral {
     display: inline-block;
-    margin-top: 14px;
-    padding: 9px 16px;
-    border-radius: 9px;
-    font-size: 15px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 14px;
     font-weight: 800;
-    background: #e6f4e9;
-    color: #26774d;
+    letter-spacing: 1px;
+}
+
+.cartao-estado .estado-geral {
+    min-width: 125px;
 }
 
 .estado-normal {
@@ -369,6 +421,16 @@ body {
 .estado-alerta {
     background: #fde8e6;
     color: #b42318;
+}
+
+.cartao-estado .descricao-estado {
+    max-width: 230px;
+    margin: 15px auto 0;
+    min-height: 35px;
+}
+
+.cartao-estado .cartao-rodape {
+    justify-content: center;
 }
 
 /* GRAFICO */
@@ -402,6 +464,7 @@ body {
     gap: 8px;
     font-size: 11px;
     color: #748279;
+    white-space: nowrap;
 }
 
 .legenda span {
@@ -430,6 +493,7 @@ body {
     font-size: 10px;
     padding-left: 42px;
     padding-right: 5px;
+    margin-top: 5px;
 }
 
 /* NOTA AMBIENTAL */
@@ -447,6 +511,7 @@ body {
 
 .nota-icone {
     font-size: 30px;
+    flex-shrink: 0;
 }
 
 .nota h3 {
@@ -546,7 +611,16 @@ footer > p {
     }
 
     .grafico-area {
-        height: 210px;
+        height: 220px;
+    }
+
+    .grafico-rodape {
+        padding-left: 35px;
+        font-size: 9px;
+    }
+
+    .legenda {
+        font-size: 10px;
     }
 
     footer {
